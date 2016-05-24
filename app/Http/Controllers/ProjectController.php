@@ -4,6 +4,7 @@ namespace CodeProject\Http\Controllers;
 
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Services\ProjectService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use CodeProject\Http\Requests;
 use CodeProject\Http\Controllers\Controller;
@@ -59,7 +60,14 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        return $this->repository->find($id);
+        try {
+            return $this->repository->find($id);
+        } catch (ModelNotFoundException $e) {
+            return [
+                'error' => true,
+                'message'=> 'Project not Found'
+            ];
+        }
     }
 
     /**
@@ -82,6 +90,22 @@ class ProjectController extends Controller
      */
     public function destroy($id)
     {
-        $this->repository->delete($id);
+        try {
+            $this->repository->delete($id);
+            return [
+                'status' => 'success',
+                'message' => 'Project removed'
+            ];
+        } catch (ModelNotFoundException $e) {
+            return [
+                'error' => true,
+                'message'=> 'Project not Found'
+            ];
+        } catch (QueryException $e) {
+            return  [
+                'error'    =>  true,
+                'message'   =>  'This project has related project notes'
+            ];
+        }
     }
 }

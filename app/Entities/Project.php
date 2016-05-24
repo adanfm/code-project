@@ -34,4 +34,13 @@ class Project extends Model implements Transformable
     {
         return $this->hasMany(ProjectNote::class);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleted(function($model) {
+            var_dump("asddasdsa");exit;
+            $model->notes()->getQuery()->forceDelete();
+        });
+    }
 }

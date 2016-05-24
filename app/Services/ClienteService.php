@@ -4,6 +4,7 @@ namespace CodeProject\Services;
 
 use CodeProject\Repositories\ClientRepository;
 use CodeProject\Validators\ClientValidator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 class ClienteService
@@ -50,7 +51,6 @@ class ClienteService
     public function update(array $data,$id)
     {
         try {
-
             $this->validator->with($data)->passesOrFail();
 
             return $this->repository->update($data,$id);
@@ -59,6 +59,11 @@ class ClienteService
             return [
                 'error' => true,
                 'message' => $e->getMessageBag()
+            ];
+        } catch (ModelNotFoundException $e) {
+            return [
+                'error' => true,
+                'message' => $e->getMessage(),
             ];
         }
     }
